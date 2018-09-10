@@ -1,3 +1,5 @@
-# routing-and-spectrum-assignment
-RSA
-designing a flex grid optical network
+# REQUIRED PACKAGES
+* python3
+* colorama
+* graphviz
+* eog
