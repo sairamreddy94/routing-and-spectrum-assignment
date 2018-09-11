@@ -1,6 +1,8 @@
 import bottle
 import ast
 import sys, os
+import random
+import datetime
 
 
 class Flexgridnw:
@@ -9,7 +11,7 @@ class Flexgridnw:
     print(os.getcwd())
 
     def __init__(self):
-        with open("{}/data/config.ini".format(self.config['cwd']), mode="r", encoding="utf-8") as f:
+        with open("{}/data/fgnw.ini".format(self.config['cwd']), mode="r", encoding="utf-8") as f:
             self.config['fgnw'] = ast.literal_eval(f.read())
         self.load(self.config['fgnw']['current-network'])
         self.config['network'] = [x for x in self.config['fgnw']['networks'] if x[0] == self.config['fgnw']['current-network']][0]
@@ -37,6 +39,11 @@ class Flexgridnw:
 
     def draw(self):
         """Draw the network"""
+        post_message = ""
+        if bottle.Request.method == "POST":
+            post_actions = ("trafficadd", "trafficdel")
+            if request.forms.get('action') in post_actions:
+                post_message = getattr(self, request.forms.get('action'))
         html5 = []
         html5.append("<h1>{} network</h1>".format(self.config['network'][1]))
         # scale the network to the screen
@@ -65,15 +72,41 @@ class Flexgridnw:
             html5.append("""<circle cx="{}" cy="{}" r="20" fill="white" stroke="blue" />""".format(x, y))
             html5.append("""<text x="{}" y="{}" alignment-baseline="middle" text-anchor="middle">{}</text>""".format(x, y, node[0]))
         html5.append("""</svg>""")
+        html5.append("""<form method="post" action="/network">""")
+        html5.append("""<input type="hidden" name="action" value="add-traffic" />""")
+        html5.append("""<button type="submit">Add traffic</button>""")
+        # html5.append("""<a href="autoplay">Auto play</>""")
+        html5.append("""</form>""")
+        html5.append("""<p>{}</p>""".format(post_message))
         return "".join(html5)
 
     def trafficadd(self, traffic):
         """Add traffic to the network"""
-        return "Add traffic"
+        if len(self.config['traffic']) >= self.config['fgnw']['maximum-number-of-traffics']:
+            return
+        traffic = self.trafficrandgen()
 
-    def trafficdel(self, traffic):
+    def trafficdel(self, trafficid):
         """Delete traffic from the network"""
-        return "Delete traffic"
+        self.config['traffic'] = [x for x in self.config['traffic'] if x[0] != trafficid]
+
+    def trafficrandgen(self):
+        """Generate random traffic for the network"""
+        source = random.randint(1, len(self.config['nodes']))
+        destin = random.randint(1, len(self.config['nodes']))
+        while source == destin:
+            destin = random.randint(1, len(self.config['nodes']))
+        load = random.randint(self.config['fgnw']['minimum-load'], self.config['fgnw']['maximum-load'])
+        until = datetime.datetime.now() + datetime.timedelta(seconds=random.randint(self.config['fgnw']['maximum-traffic-time']))
+        return source, destin, load, until
+
+    def trafficdefrag(self):
+        """Defragment the traffic of the network"""
+        pass
+
+    def trafficbalance(self):
+        """Balance the traffic of the network"""
+        pass
 
 fgnw = Flexgridnw()
 
@@ -81,6 +114,8 @@ fgnw = Flexgridnw()
 @bottle.route('/')
 @bottle.route('/<section>')
 @bottle.route('/<section>/')
+@bottle.route('/network', method="POST")
+@bottle.route('/network/', method="POST")
 def home(section=None):
     if section in fgnw.sections:
         return getattr(fgnw, section)()
