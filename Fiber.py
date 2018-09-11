@@ -1,7 +1,7 @@
 import numpy as np,sys
+"""This is a fiber class , means the edges in our network.which hold the detials of the edges"""
 
-#Assumin that the central frequency is at location 284
-# so to get the indices around this central frequency use: index= index - central_index
+
 class Fiber():
     def __init__(self, graph,path_list):
         self.graph = graph
@@ -11,6 +11,7 @@ class Fiber():
         np.set_printoptions(threshold=np.inf)
 
     def initiateEdges(self):
+        """here we are creating the ids and attributes to the edges(fiber)"""
         intialfreq = self.generateFreqWav()
         for i in range(len(self.graph)):
             for j in range(i + 1, len(self.graph)):
@@ -31,7 +32,7 @@ class Fiber():
         return path_id
 
     def updateSpectrum(self,edge,usedSpec):
-        self.ids[edge]['used_spec'] += usedSpec             # assigning cost to node 1 and node 2
+        self.ids[edge]['used_spec'] += usedSpec             # we shall update the egdes through these methods assigning cost to node 1 and node 2
         self.ids[(edge[1], edge[0])]['used_spec'] += usedSpec
 
     def updateLink1(self,edge,parameter_list, amount_list):
@@ -55,14 +56,16 @@ class Fiber():
             self.ids[(edge[1], edge[0])][parameter_list[i]] = amount_list[i]
 
 
-    def spectrumLeftOut(self,specoccupied):
-        return self.max_spectrum - specoccupied
-
-    def check_availability(self,edge, amount):
-        freq= self.ids[(edge)]["array"]
+    # def spectrumLeftOut(self,specoccupied):
+    #     return self.max_spectrum - specoccupied
+    #
+    # def check_availability(self,edge, amount):
+    #     freq= self.ids[(edge)]["array"]
 
 
     def generateFreqWav(self):
+        """generating those fixed frequencies in a vertical stack with 1 being the frequencies 2 being the 0's and 3 being the wavelengths corresponding to the frequencies"""
+
         base_freq = 191.325e12
         freq = []
         new_freq = base_freq
@@ -78,16 +81,14 @@ class Fiber():
         return freq_all
 
 
-    def assignPath(self):
-        if len(self.path_list) == 0:
-            sys.exit("No path available... Visit again !!!!")
-        #print(self.path_list)
-        for path in self.path_list:
-            pass
+    # def assignPath(self):
+    #     if len(self.path_list) == 0:
+    #         sys.exit("No path available... Visit again !!!!")
+    #     #print(self.path_list)
+    #     for path in self.path_list:
+    #         pass
 
-
-'''
-    def spectrumAvailable(self, link_id):
-        pass
-        return self.max_spectrum - self.ids[link_id]['used_spec']
-'''
+    #
+    # def spectrumAvailable(self, link_id):
+    #     pass
+    #     return self.max_spectrum - self.ids[link_id]['used_spec']

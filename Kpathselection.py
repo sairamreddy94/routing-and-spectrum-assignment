@@ -9,11 +9,12 @@ class Kpathselection():
         self.t = t
 
     def YenKpath(self):
+        """this computes the k shortest paths and the disjoint paths"""
         kpath_list = []
         file_name = './test/nsfnet.txt'
         self.graph, self.num_nodes, self.num_arcs, id = tools.getGraphStructure(file_name)
         while True:
-            K = 100  #int(input('Enter the number of paths to search: '))
+            K = 5  #int(input('Enter the number of paths to search: '))
 
             if K == 0:
                 sys.exit('No path required ... Goodbye!')
@@ -29,12 +30,12 @@ class Kpathselection():
         if shortest_path_tree:
             kpaths = tools.printPaths(shortest_path_tree)
             for k in kpaths:
-                kpath_list.append(k)
-            # print("this is k paths",kpath_list)
+                kpath_list.append(k)                 # these are the k shortest paths
+            for kpaths1 in kpath_list:
+                print("this is k shortest paths",kpaths1)
             self.dist_path = tools.printDistictPaths(shortest_path_tree)
             for path in self.dist_path:
-                pass
-                # print("disjoint path \t{}\t distance: {}\t hops: {}".format(path['path'], path['cost'], path['hops']))
+                print("disjoint path \t{}\t distance: {}\t hops: {}".format(path['path'], path['cost'], path['hops']))
         else:
             print('No path between the source and the well node!')
         return kpath_list,self.graph
@@ -43,13 +44,13 @@ class Kpathselection():
 
     def getPath(self,path_list):
         for value,path in enumerate(path_list,start=1):
-            value =1 #np.random.randint(0, len(path_list))
+            value =1 #np.random.randint(0, len(path_list))          # selecting a randon path from the k paths
             costOfLink = path_list[value]['cost']
             hops = path_list[value]['hops']
             return path_list[value],value,costOfLink,hops
 
     def path_id(self,path_get):
-        for value in self.dist_path:
+        for value in self.dist_path:        #trying to create path ids for the topology
             result = hashlib.md5(str(value['path']).encode()).hexdigest()
             if value["path"] == path_get:
                 return result

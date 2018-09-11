@@ -19,19 +19,15 @@ def main():
     fiber=Fiber(graph,path_list)
     ids = fiber.initiateEdges()
     #print("edge ids:",ids)
-    print("-"*80)
-    for id in ids.values():
-        pass
-        # print("id:", id)
-
+    print("-"*100)
     fre_list = fiber.generateFreqWav()   # list of all the freq and its array
     kpath.updatepath(['id', 'route', 'source', 'destination', 'weight', 'cost', 'hops'],
                      [path_id, path_value["path"], s, t, value, cost,
                       hops])  # updating the path class with s,t,cost,hops etc
-    # print("this is the selected path ", updated)
-    # print("=" * 500)
-
+    print("this is the selected path ", updated)
     for x in itertools.count(0):
+        print("*" * 500)
+        print("                                                                                     ASSIGNING DEMANDS STARTED")
         dem = traffic1.demand_generation()
         # print("this is source {} destination {} and dem {}".format(s,t,dem))
         split = traffic1.segregateDataRates(dem,cost)
@@ -39,16 +35,10 @@ def main():
         rsa = RsaAlgorithm(fre_list, split)
         # if slot <= 769 or spec <= 4850:
         assigned, used_spec = rsa.assignedspectrum()  # calling the assigned spectrum
-        # pointer_count = []
-        # pointer_count.append(pointer_ids)
-        # print("in rsa testing x for 2 4 6 case", pointer_count, pointer_ids)
-        # if x == 2:
-        #     rsa.release_slots()
-
         for values in assigned:
-            pass
             print(values)
         fiber_id = fiber.getCompleteedgeId(path_value['path'])
+        print("=" * 500)
 
         for edge in fiber_id:
             fiber.updateSpectrum(edge, list(used_spec))
